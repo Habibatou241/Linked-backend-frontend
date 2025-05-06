@@ -4,13 +4,13 @@ import { Link, useNavigate } from 'react-router-dom';
 const Navbar = ({ onLoginClick, showNavigation = true }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
-  // Get user info from localStorage or your auth state management
   const user = JSON.parse(localStorage.getItem('user'));
   
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-    navigate('/login');
+    navigate('/'); // Changed from '/login' to '/' to redirect to Hero page
+    setShowDropdown(false); // Close the dropdown after logout
   };
 
   return (
