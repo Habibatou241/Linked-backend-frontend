@@ -40,9 +40,11 @@ const Login = ({ onLoginSuccess = () => {} }) => {
       const response = await axiosInstance.post('/api/login', formData);
       
       if (response.data.status === 'success') {
-        // Store the token if needed
+        // Store both token and user data
         localStorage.setItem('token', response.data.token);
-        onLoginSuccess(); // Will use default empty function if prop not provided
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        
+        onLoginSuccess();
         navigate('/dashboard');
       }
     } catch (error) {
