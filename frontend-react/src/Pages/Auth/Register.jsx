@@ -156,8 +156,9 @@ const Register = ({ onLoginClick }) => {
               required
             >
               <option value="">Sélectionnez votre rôle</option>
-              <option value="client">User</option>
-              <option value="engineer">Admin</option>
+              <option value="drilling engineer">drilling engineer</option>
+              <option value="reservoir engineer">reservoir engineer</option>
+              <option value="production engineer">production engineer</option>
             </select>
           </div>
 

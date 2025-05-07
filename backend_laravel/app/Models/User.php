@@ -50,4 +50,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    protected $attributes = [
+        'role' => 'user'
+    ];
 }
