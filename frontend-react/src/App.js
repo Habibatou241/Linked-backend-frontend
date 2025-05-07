@@ -10,6 +10,10 @@ import About from './Pages/NavbarSections/About';
 import Technology from './Pages/NavbarSections/Technology';
 import Services from './Pages/NavbarSections/Services';
 import Contact from './Pages/NavbarSections/Contact';
+import Profile from './Pages/NavbarSections/Profile';
+import Paiement from './Pages/NavbarSections/Paiement';
+import NewProject from './Pages/DashboardSections/NewProject';
+
 
 function App() {
   return (
@@ -26,6 +30,9 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/paiement" element={<Paiement />} />
+          <Route path="/newproject" element={<NewProject />} />
         </Routes>
       </main>
     </div>

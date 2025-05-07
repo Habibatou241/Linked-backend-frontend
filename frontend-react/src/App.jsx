@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
 import MyProjects from './Pages/DashboardSections/MyProjects';
@@ -16,56 +16,51 @@ import Login from './Pages/NavbarSections/Login';
 // Update Register import path
 import Register from './Pages/Auth/Register';
 import Hero from './Pages/Hero';
+import Profile from './Pages/NavbarSections/Profile';
+import Paiement from './Pages/NavbarSections/Paiement';
 
-function App() {
-  const [currentView, setCurrentView] = useState('MyProjects');
+const App = () => {
+  const [currentView, setCurrentView] = useState('dashboard');
   const navigate = useNavigate();
-
-  const handleRegister = () => {
-    console.log('Register button clicked'); // Add this line
-    navigate('/register');
-  };
 
   const renderDashboard = () => {
     switch (currentView) {
-      case 'MyProjects':
-        return <MyProjects />;
-      case 'DataImport':
-        return <DataImport />;
-      case 'Preprocessing':
-        return <Preprocessing />;
-      case 'DataAnalysis':
-        return <DataAnalysis />;
-      case 'Classification':
-        return <Classification />;
-      case 'Regression':
-        return <Regression />;
-      default:
-        return <MyProjects />;
+      case 'projects': return <MyProjects />;
+      case 'import': return <DataImport />;
+      case 'preprocessing': return <Preprocessing />;
+      case 'analysis': return <DataAnalysis />;
+      case 'classification': return <Classification />;
+      case 'regression': return <Regression />;
+      default: return <MyProjects />;
     }
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      <Navbar />
-      <Routes>
-        <Route path="/about" element={<About />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/login" element={<Login onLoginSuccess={() => setCurrentView('dashboard')} />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={
-          <div className="flex flex-1">
-            <Sidebar setCurrentView={setCurrentView} />
-            <div className="flex-1 p-4 overflow-y-auto">
-              {renderDashboard()}
+    <div className="flex flex-col min-h-screen">
+      <Navbar showNavigation={true} />
+      <div className="flex-1">
+        <Routes>
+          <Route exact path="/" element={<Hero />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login onLoginSuccess={() => navigate('/dashboard')} />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/payment" element={<Paiement />} />
+          <Route path="/dashboard" element={
+            <div className="flex flex-1">
+              <Sidebar setCurrentView={setCurrentView} />
+              <div className="flex-1 p-4 overflow-y-auto">
+                {renderDashboard()}
+              </div>
             </div>
-          </div>
-        } />
-        <Route path="/" element={<Hero />} />
-      </Routes>
+          } />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
     </div>
   );
-}
+};
 
 export default App;
