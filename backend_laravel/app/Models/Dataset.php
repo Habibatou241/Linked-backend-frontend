@@ -44,4 +44,12 @@ class Dataset extends Model
     {
         return file_exists($this->full_path);
     }
+
+    /**
+     * Define the relationship with the project.
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
 }

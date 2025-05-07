@@ -13,6 +13,8 @@ import Contact from './Pages/NavbarSections/Contact';
 import Profile from './Pages/NavbarSections/Profile';
 import Paiement from './Pages/NavbarSections/Paiement';
 import NewProject from './Pages/DashboardSections/NewProject';
+import ProjectDetails from './Pages/DashboardSections/ProjectDetails';
+
 
 
 function App() {
@@ -33,6 +35,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/paiement" element={<Paiement />} />
           <Route path="/newproject" element={<NewProject />} />
+          <Route path="/projectdetails/:projectId" element={<ProjectDetails/>} />
         </Routes>
       </main>
     </div>

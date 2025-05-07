@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const MyProjects = () => {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState('');
@@ -73,9 +75,9 @@ const MyProjects = () => {
     }
   };
 
-  if (loading) {
-    return <div className="p-6 flex-1 bg-[#FFF3E0]">Loading projects...</div>;
-  }
+  const handleViewDatasets = (projectId) => {
+    navigate(`/projectdetails/${projectId}`);
+  };
 
   return (
     <div className="p-6 flex-1 bg-[#FFF3E0]">
@@ -125,6 +127,12 @@ const MyProjects = () => {
                     </>
                   ) : (
                     <>
+                      <button
+                        onClick={() => handleViewDatasets(project.id)}
+                        className="px-3 py-1 bg-[#8B4513] text-white rounded hover:bg-[#9B5523]"
+                      >
+                        View Datasets
+                      </button>
                       <button
                         onClick={() => handleEdit(project)}
                         className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"

@@ -107,4 +107,23 @@ class ProjectController extends Controller
             'message' => 'Projet supprimé avec succès'
         ]);
     }
+
+    public function show($id)
+    {
+        $project = Project::where('id', $id)
+                         ->where('user_id', auth()->id())
+                         ->first();
+    
+        if (!$project) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Project not found'
+            ], 404);
+        }
+    
+        return response()->json([
+            'status' => 'success',
+            'project' => $project
+        ]);
+    }
 }

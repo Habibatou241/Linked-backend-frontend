@@ -48,6 +48,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/payment" element={<Paiement />} />
+
           <Route path="/dashboard" element={
             <div className="flex flex-1">
               <Sidebar setCurrentView={setCurrentView} />

@@ -125,16 +125,22 @@ class DataImportController extends Controller
     }
 
     /**
-     * Liste les datasets de l’utilisateur.
+     * Liste les datasets de l'utilisateur.
      */
-    public function list(): JsonResponse
+    public function list(Request $request): JsonResponse
     {
-        $d = Dataset::where('user_id', auth()->id())->get();
-        return response()->json(['status'=>'success','datasets'=>$d]);
+        $datasets = Dataset::where('project_id', $request->project_id)
+                          ->where('user_id', auth()->id())
+                          ->get();
+    
+        return response()->json([
+            'status' => 'success',
+            'datasets' => $datasets
+        ]);
     }
 
     /**
-     * Stocke un fichier et crée l’enregistrement.
+     * Stocke un fichier et crée l'enregistrement.
      */
     private function storeFile($file, string $name, int $projectId): JsonResponse
     {
@@ -144,15 +150,17 @@ class DataImportController extends Controller
             return response()->json(['status'=>'error','message'=>'Enregistrement échoué.'],500);
         }
 
-        $ds = Dataset::create([
-            'user_id'           => auth()->id(),
-            'project_id'        => $projectId,
-            'name'              => $name,
+        $dataset = Dataset::create([
+            'user_id' => auth()->id(),
+            'project_id' => $projectId,
+            'name' => $name,
             'original_filename' => $file->getClientOriginalName(),
-            'file_path'         => $relPath,
-            'file_type'         => $file->getClientOriginalExtension(),
+            'file_path' => $relPath,
+            'file_type' => $file->getClientOriginalExtension(),
         ]);
 
-        return response()->json(['status'=>'success','dataset'=>$ds],201);
+        return response()->json(['status'=>'success','dataset'=>$dataset],201);
     }
 }
+
+
