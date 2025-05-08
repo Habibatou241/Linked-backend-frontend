@@ -17,7 +17,7 @@ class RegisterRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|string|in:client,engineer',
+            'role' => 'nullable|string|in:user,admin',
         ];
     }
 
@@ -31,8 +31,7 @@ class RegisterRequest extends FormRequest
             'password.required' => 'Le mot de passe est requis',
             'password.min' => 'Le mot de passe doit contenir au moins 8 caractères',
             'password.confirmed' => 'La confirmation du mot de passe ne correspond pas',
-            'role.required' => 'Le rôle est requis',
-            'role.in' => 'Le rôle doit être soit client soit ingénieur',
+            'role.in' => 'Le rôle doit être soit user soit admin',
         ];
     }
 }

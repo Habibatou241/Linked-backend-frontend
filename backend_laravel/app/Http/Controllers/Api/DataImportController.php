@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use League\Csv\Writer;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Illuminate\Support\Facades\Auth;
+
 
 class DataImportController extends Controller
 {
@@ -57,72 +59,79 @@ class DataImportController extends Controller
     /**
      * Fusionne plusieurs jeux en un seul CSV.
      */
-    public function merge(Request $request): JsonResponse
-    {
-        $request->validate([
-            'dataset_ids'   => 'required|array|min:2',
-            'dataset_ids.*' => 'exists:datasets,id',
-            'name'          => 'required|string|max:255',
-            'project_id'    => 'required|exists:projects,id',
-        ]);
+    public function merge(Request $request)
+{
+    $request->validate([
+        'dataset_ids' => 'required|array|min:2',
+        'dataset_ids.*' => 'exists:datasets,id',
+        'project_id' => 'required|exists:projects,id',
+    ]);
 
-        $datasets   = Dataset::whereIn('id', $request->dataset_ids)
-                              ->where('user_id', auth()->id())
-                              ->get();
-        $mergedData = [];
+    $user = Auth::user();
+    $mergedContent = '';
+    $headersAdded = false;
+    $headerReference = null;
 
-        foreach ($datasets as $ds) {
-            // construit le chemin absolu correct
-            $path = storage_path('app/' . $ds->file_path);
+    foreach ($request->dataset_ids as $id) {
+        $dataset = Dataset::find($id);
 
-            if (! file_exists($path)) {
+        // Sécurité : vérifier que le dataset appartient à l'utilisateur
+        if (!$dataset || $dataset->user_id !== $user->id) {
+            return response()->json(['error' => "Dataset #$id non autorisé ou introuvable."], 403);
+        }
+
+        $path = storage_path('app/private/' . $dataset->file_path);
+
+        // Vérification de l'existence du fichier
+        if (!file_exists($path)) {
+            return response()->json(['error' => "Fichier manquant pour le dataset #$id."], 404);
+        }
+
+        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+        if (empty($lines)) {
+            continue; // Ignore fichiers vides
+        }
+
+        $header = array_shift($lines); // En-tête
+
+        if (!$headersAdded) {
+            $mergedContent .= $header . "\n";
+            $headersAdded = true;
+            $headerReference = $header;
+        } else {
+            if ($header !== $headerReference) {
                 return response()->json([
-                    'status'  => 'error',
-                    'message' => "Fichier introuvable : $path"
+                    'error' => "Les en-têtes des fichiers ne correspondent pas (dataset #$id)."
                 ], 422);
             }
-
-            $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-            if ($ext === 'csv') {
-                $rows = array_map('str_getcsv', file($path));
-            } else {
-                $sheet = IOFactory::load($path)->getActiveSheet()->toArray();
-                $rows  = $sheet;
-            }
-
-            if (empty($mergedData)) {
-                $mergedData = $rows;
-            } else {
-                $mergedData = array_merge($mergedData, array_slice($rows, 1));
-            }
         }
 
-        // sauvegarde dans private/datasets
-        $fileName = Str::random(40) . '_merged.csv';
-        $relPath  = "private/datasets/{$fileName}";
-        Storage::makeDirectory('private/datasets');
-        $fullPath = storage_path("app/{$relPath}");
-
-        $csv = Writer::createFromPath($fullPath, 'w+');
-        foreach ($mergedData as $r) {
-            $csv->insertOne($r);
-        }
-
-        $new = Dataset::create([
-            'user_id'           => auth()->id(),
-            'project_id'        => $request->project_id,
-            'name'              => $request->name,
-            'original_filename' => $fileName,
-            'file_path'         => $relPath,
-            'file_type'         => 'csv',
-        ]);
-
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Jeux fusionnés avec succès.',
-            'dataset' => $new,
-        ], 201);
+        $mergedContent .= implode("\n", $lines) . "\n";
     }
+
+    if (trim($mergedContent) === '') {
+        return response()->json(['error' => 'Aucune donnée à fusionner.'], 422);
+    }
+
+    $mergedFileName = 'merged_' . time() . '.csv';
+    $mergedFilePath = 'datasets/' . $mergedFileName;
+
+    Storage::disk('private')->put($mergedFilePath, $mergedContent);
+
+    $mergedDataset = Dataset::create([
+        'user_id' => $user->id,
+        'project_id' => $request->project_id,
+        'file_name' => $mergedFileName,
+        'file_path' => $mergedFilePath,
+    ]);
+
+    return response()->json([
+        'message' => 'Fichiers fusionnés avec succès',
+        'dataset' => $mergedDataset
+    ]);
+}
+
 
     /**
      * Liste les datasets de l'utilisateur.
@@ -161,6 +170,20 @@ class DataImportController extends Controller
 
         return response()->json(['status'=>'success','dataset'=>$dataset],201);
     }
+
+    public function destroy($id)
+    {
+        $dataset = Dataset::findOrFail($id);
+
+        // Supprimer le fichier du stockage
+        if (Storage::disk('private')->exists($dataset->file_path)) {
+            Storage::disk('private')->delete($dataset->file_path);
+        }
+
+        $dataset->delete();
+
+        return response()->json([
+            'message' => 'Dataset supprimé avec succès'
+        ]);
+    }
 }
-
-

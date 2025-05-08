@@ -23,14 +23,14 @@ const Sidebar = ({ onSelectSection }) => {
         <div className="pt-4">
           <h3 className="text-[#8B4513] text-sm font-medium mb-2">File Actions</h3>
           <div className="space-y-1">
-            <button onClick={() => onSelectSection('AddFile')} className="flex items-center text-[#8B4513] hover:bg-[#8B4513]/10 w-full px-2 py-1 text-sm">
+            {/* <button onClick={() => onSelectSection('AddFile')} className="flex items-center text-[#8B4513] hover:bg-[#8B4513]/10 w-full px-2 py-1 text-sm">
               <span className="w-6">📄</span>
               <span>Add File</span>
             </button>
             <button onClick={() => onSelectSection('NewFolder')} className="flex items-center text-[#8B4513] hover:bg-[#8B4513]/10 w-full px-2 py-1 text-sm">
               <span className="w-6">📁</span>
               <span>New Folder</span>
-            </button>
+            </button> */}
             <button onClick={() => onSelectSection('ImportData')} className="flex items-center text-[#8B4513] hover:bg-[#8B4513]/10 w-full px-2 py-1 text-sm">
               <span className="w-6">📥</span>
               <span>Import Data</span>

@@ -144,23 +144,7 @@ const Register = ({ onLoginClick }) => {
               required
             />
           </div>
-          <div>
-            <label className="block text-[#8B4513] text-sm mb-1">
-              Rôle
-            </label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="w-full px-3 py-1.5 border rounded-md bg-[#fad9c1] focus:outline-none focus:ring-2 focus:ring-[#1E3C58]"
-              required
-            >
-              <option value="">Sélectionnez votre rôle</option>
-              <option value="drilling engineer">drilling engineer</option>
-              <option value="reservoir engineer">reservoir engineer</option>
-              <option value="production engineer">production engineer</option>
-            </select>
-          </div>
+          
 
           <div className="flex items-center">
             <input
